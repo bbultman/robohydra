@@ -69,17 +69,27 @@ var createRoboHydraServer = require('robohydra').createRoboHydraServer;
     }
 
 
-    var server = createRoboHydraServer(
-        {
-            plugins: extraPlugins.concat(fileConfig.plugins || []),
-            pluginLoadPaths: (fileConfig.pluginLoadPaths || []).concat(extraPluginLoadPath),
-            summoner: fileConfig.summoner,
-            secure: fileConfig.secure,
-            sslOptions: fileConfig.sslOptions,
-            quiet: commander.quiet || fileConfig.quiet
-        },
-        extraVars
-    );
+    var server;
+    try {
+        server = createRoboHydraServer(
+            {
+                plugins: extraPlugins.concat(fileConfig.plugins || []),
+                pluginLoadPaths: (fileConfig.pluginLoadPaths || []).concat(extraPluginLoadPath),
+                summoner: fileConfig.summoner,
+                secure: fileConfig.secure,
+                sslOptions: fileConfig.sslOptions,
+                quiet: commander.quiet || fileConfig.quiet
+            },
+            extraVars
+        );
+    } catch (e) {
+        if (e.code === 'ENOENT') {
+            console.error("Cannot read file '" + e.path + "'.");
+        } else {
+            console.error("ERROR: " + e.message);
+        }
+        process.exit(1);
+    }
 
     var port = commander.port || fileConfig.port || 3000;
     server.on('error', function (e) {
