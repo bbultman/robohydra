@@ -86,7 +86,8 @@ var createRoboHydraServer = require('robohydra').createRoboHydraServer;
         if (e.code === 'ENOENT') {
             console.error("Cannot read file '" + e.path + "'.");
         } else {
-            console.error("ERROR: " + e.message);
+            // TODO: This needs to improve
+            throw e;
         }
         process.exit(1);
     }
